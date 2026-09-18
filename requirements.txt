@@ -1,0 +1,8 @@
+matplotlib==3.10.8
+numpy==2.4.1
+pandas==2.3.3
+pykalman==0.11.2
+scikit-learn==1.8.0
+scipy==1.17.0
+seaborn==0.13.2
+pysindy==2.1.0
