@@ -2,10 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 
-Helper function to generate Figure-of-Merit (FoM) plots. 
-Called by 'runToolkit.py' and 'runToolkitExtended.py'.
-
-For the full procedure, see "README.md".
+Helper function to generate Figure-of-Merit (FoM) plots.
 
 For method details, please see "A toolkit for data-driven discovery of governing equations in 
 high-noise regimes" (2022) by C.B. Delahunt and J.N. Kutz.

@@ -3,9 +3,6 @@
 """
  
 Support functions for the sindy toolkit.
-Called by 'runToolkit.py', 'runToolkitExtended.py' and by 'plotSelectedIterations.py'.
-
-For the full procedure, see "README.md".
 
 For method details, please see "A toolkit for data-driven discovery of governing equations in 
 high-noise regimes" (2022) by C.B. Delahunt and J.N. Kutz.

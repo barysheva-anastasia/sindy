@@ -2,10 +2,6 @@
 # -*- coding: utf-8 -*-
 """SINDy toolkit на всех пяти траекториях v4 разом, с ограничением ограниченности (trapping SINDy).
 
-Анонимизированная копия для тезиса: имена признаков заменены на `x0..x103`
-(маппинг на исходные имена и на сегменты — в
-`client-system/thesis_feature_mapping.json`, вне этой папки).
-
 Пять групп одного сегмента (`load_loyalty_v4_data.to_trajectory`) передаются как
 пять обучающих траекторий в одном вызове `sindy_toolkit_func` — многотраекторный
 режим тулкита, а не пять отдельных прогонов. Отбор признаков повторяет
@@ -14,22 +10,13 @@ MIN_MAX_SHARE=0.03 считается по всем пяти группам ср
 ['x50', 'x5']; 104 -> 86 признаков.
 
 `maxRunTimeSecs=600` ограничивает regress-cull цикл каждой из пяти траекторий
-десятью минутами независимо друг от друга (см. sindy_toolkit_function.py) —
-без этого прогон на 86 переменных может тянуться часами на одну траекторию.
+десятью минутами независимо друг от друга (см. sindy_toolkit_function.py).
 
 `sindy_toolkit_func` вызывается с `enforceBoundednessFlag=True,
 boundednessMethod='trapping'`: без ограничения часть итераций даёт модели с
 неограниченными траекториями, и figures of merit на них бессмысленны, потому что
 тулкит интегрирует каждого кандидата. Ограничение реализовано только для
 `polynomialLibraryDegree=1`, что здесь и используется.
-
-На полной библиотеке (86 признаков, degree 1 -> 86*87=7482 активных элементов на
-траекторию) `sindy_toolkit_func` теперь по умолчанию не ограничивает
-`boundednessMaxNumFreeEntries` (снят лимит 2500), так что 'trapping' работает на
-всех итерациях, включая первые, до отсева — в отличие от исходного
-loyalty-прогона, где ранние итерации шли через 'ladder', см. CLAUDE.md. Это
-дороже по времени, но убирает молчаливый fallback на 'ladder' на большой
-библиотеке.
 
 Про gamma: признаки v4 — доли, и в библиотеке степени 1 активен константный
 функционал, поэтому `boundednessMargin=0` автоматически ужесточается до
@@ -63,7 +50,7 @@ logger = logging.getLogger(__name__)
 MIN_MAX_SHARE = 0.03
 DROP_FEATURES = ['x50', 'x5', 'x62']  # как в thesis_demo.ipynb
 TRAIN_RANGE = 650           # из 731 даты; остальное - тест
-MAX_RUN_TIME_SECS = 5600     # на каждую из пяти траекторий
+MAX_RUN_TIME_SECS = 600     # на каждую из пяти траекторий
 DATASET_NAME = 'loyaltyV4_run1'
 NORM_TYPE = 'spectral'      # точное условие для линейной модели; 'identity' - буквальное условие статей
 BOUNDEDNESS_MARGIN = 0.
@@ -72,9 +59,7 @@ BOUNDEDNESS_MARGIN = 0.
 
 df, all_features = load_loyalty_df()
 
-# Порог берётся по всем группам сразу, чтобы набор признаков был общим и все
-# пять траекторий можно было сложить в один train_data (см. docstring загрузчика
-# и loyaltyV4Series.ipynb).
+# Порог берётся по всем группам сразу
 feature_cols = [
     c for c in all_features
     if c not in DROP_FEATURES and df[c].max() >= MIN_MAX_SHARE
@@ -85,8 +70,6 @@ numVars = train_data_full.shape[2]
 
 train_noisy = train_data_full[:, :TRAIN_RANGE, :]
 test_noisy = train_data_full[:, TRAIN_RANGE:, :]
-# Тулкит печатает имена переменных в моделях; настоящие имена колонок читаются
-# лучше, чем x0..x85, и переносятся в пикл (results['variableNames']).
 variableNames = feature_cols
 
 logger.info(f"группы:    {group_ids}")
